@@ -15,11 +15,12 @@ app.get('/', (req, res) => {
 });
 
 app.post('/create-order', async (req, res) => {
+    console.log('API Key:', process.env.REVOLUT_API_KEY);
   try {
     const response = await axios.post(
       'https://sandbox-merchant.revolut.com/api/orders',
       {
-        amount: 100, 
+        amount: 1, 
         currency: 'GBP',
         capture_mode: 'automatic',
       },
@@ -35,6 +36,11 @@ app.post('/create-order', async (req, res) => {
     res.json(response.data);
   } catch (error) {
     console.error('Error creating order:', error.response ? error.response.data : error.message);
+    if (error.response) {
+      console.error('Error response data:', error.response.data);
+      console.error('Error response status:', error.response.status);
+      console.error('Error response headers:', error.response.headers);
+    }
     res.status(500).json({ error: error.message });
   }
 });
@@ -42,4 +48,5 @@ app.post('/create-order', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
 

@@ -4,16 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Revolut Payment</title>
-  <script src="https://merchant.revolut.com/embed.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="https://cdn.skypack.dev/@revolut/checkout"></script>
 </head>
 <body>
   <div id="card-field"></div>
   <button id="button-submit" type="button">Submit</button>
   <p id="result"></p>
 
-  <script>
+  <script type="module">
     async function initializePayment() {
       try {
+        
         const orderResponse = await fetch('/create-order', {
           method: 'POST',
           headers: {
@@ -21,31 +23,63 @@
           },
         });
 
+        if (!orderResponse.ok) {
+          throw new Error(`Server error: ${orderResponse.statusText}`);
+        }
+
         const orderData = await orderResponse.json();
+        console.log('Order data:', orderData);
         const orderToken = orderData.token;
 
-        const { createCardField } = await RevolutCheckout(orderToken);
+        
+        const { default: RevolutCheckout } = await import('https://cdn.skypack.dev/@revolut/checkout');
 
-        const cardField = createCardField({
+        
+        const instance = await RevolutCheckout(orderToken, "sandbox");
+
+        // Create and configure card field
+        const cardField = instance.createCardField({
           target: document.getElementById('card-field'),
+          styles: {
+            default: {
+              color: '#fff',
+              fontSize: '16px',
+              border: '1px solid #ccc',
+              backgroundColor: '#222',
+              borderRadius: '8px',
+              padding: '10px',
+              placeholderColor: '#666',
+              height: '40px' 
+            },
+            focused: {
+              borderColor: '#00f'
+            },
+            invalid: {
+              borderColor: '#f00'
+            }
+          },
           onSuccess() {
             document.getElementById('result').textContent = 'Payment successful!';
           },
           onError(error) {
-            document.getElementById('result').textContent = `Payment failed: ${error.message}`;
+            console.error('Payment error:', error);
+            document.getElementById('result').textContent = `Payment failed: ${error.message || 'An unknown error occurred'}`;
           },
         });
 
+        
         document.getElementById('button-submit').addEventListener('click', () => {
           cardField.submit({
             email: 'isabelgouveia@hotmail.com',
           });
         });
       } catch (error) {
-        document.getElementById('result').textContent = `Error: ${error.message}`;
+        console.error('Initialization error:', error);
+        document.getElementById('result').textContent = `Error: ${error.message || 'An unknown error occurred'}`;
       }
     }
 
+    
     window.onload = initializePayment;
   </script>
 </body>
