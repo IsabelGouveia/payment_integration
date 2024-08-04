@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "@revolut/checkout": "^1.1.18",
+    "axios": "^1.7.3",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  },
+  "name": "payment_integration",
+  "description": "",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IsabelGouveia/payment_integration.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IsabelGouveia/payment_integration/issues"
+  },
+  "homepage": "https://github.com/IsabelGouveia/payment_integration#readme"
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Revolut Payment</title>
+  <script src="https://merchant.revolut.com/embed.js"></script>
+</head>
+<body>
+  <div id="card-field"></div>
+  <button id="button-submit" type="button">Submit</button>
+  <p id="result"></p>
+
+  <script>
+    async function initializePayment() {
+      try {
+        const orderResponse = await fetch('/create-order', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const orderData = await orderResponse.json();
+        const orderToken = orderData.token;
+
+        const { createCardField } = await RevolutCheckout(orderToken);
+
+        const cardField = createCardField({
+          target: document.getElementById('card-field'),
+          onSuccess() {
+            document.getElementById('result').textContent = 'Payment successful!';
+          },
+          onError(error) {
+            document.getElementById('result').textContent = `Payment failed: ${error.message}`;
+          },
+        });
+
+        document.getElementById('button-submit').addEventListener('click', () => {
+          cardField.submit({
+            email: 'isabelgouveia@hotmail.com',
+          });
+        });
+      } catch (error) {
+        document.getElementById('result').textContent = `Error: ${error.message}`;
+      }
+    }
+
+    window.onload = initializePayment;
+  </script>
+</body>
+</html>
